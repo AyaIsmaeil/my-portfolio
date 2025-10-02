@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('sender_name');
             $table->string('sender_email');
             $table->string('subject')->nullable();
-            $table->text('message');
+            $table->longText('message');
             $table->enum('status',['read','unread'])->default('unread');
             $table->softDeletes();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();

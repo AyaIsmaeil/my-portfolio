@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-
 use App\Models\Contact;
+
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Mews\Purifier\Facades\Purifier;
 
 class ContactController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
 
@@ -33,7 +32,7 @@ class ContactController extends Controller
             'message'=>'required|string',
             'user_id'=>'required|exists:users,id'
         ]);
-
+        $data['message'] = Purifier::clean($data['message'], 'default');
         $contact=Contact::create($data);
         return response()->json([
             'status'  => true,
@@ -41,12 +40,14 @@ class ContactController extends Controller
             'data'    => $contact
         ], 201);    }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($id)
     {
         $message=Contact::find($id);
+        if(!$message){
+            return response()->json([
+                'message' => 'Contact not found'
+            ], 404);
+        }
         return response()->json([
             'status'  => true,
             'message' => 'Contact List',

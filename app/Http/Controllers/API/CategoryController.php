@@ -23,9 +23,6 @@ class CategoryController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data=$request->validate([
@@ -41,9 +38,7 @@ class CategoryController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show($id)
     {
         $category=Category::find($id);
@@ -54,13 +49,10 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Category $category)
     {
         $data=$request->validate([
-            'name'=>'required|string|max:50',
+            'name'=>'required|string',
         ]);
 
         $category->update($data);
@@ -71,11 +63,11 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Category $category)
     {
+        if(!$category){
+            return response()->json(['message' => 'Category not found'], 404);
+        }
         $category->delete();
         return response()->json([
             'message' => 'Category deleted successfully',

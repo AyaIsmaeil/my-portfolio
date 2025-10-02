@@ -5,11 +5,18 @@ namespace App\Http\Controllers\API;
 use App\Models\About;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\AboutRequest;
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+
 
 class AboutController extends Controller
 {
+    private function uploadFile($file, $folder){
+        $name = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path($folder), $name);
+        return $name;
+    }
 
     public function index()
     {
@@ -21,44 +28,26 @@ class AboutController extends Controller
         ], 200);
     }
 
-    public function store(Request $request){
 
-        $validated=$request->validate([
-            'title'=>'required|string|max:50',
-            'subtitle'=>'required|string|max:50',
-            'description'=>'required|string',
-            'image'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'cv'=>'nullable|string',
-            'linkedin'=>'nullable|url',
-            'github'=>'nullable|url',
-            'facebook'=>'nullable|url',
-            'instagram'=>'nullable|url',
-            'user_id' => 'required|exists:users,id',
-        ]);
+    public function store(AboutRequest $request){
+
+        $data=$request->validated();
+
+        $data['title'] = Purifier::clean($data['title'], 'default');
+        $data['subtitle'] = Purifier::clean($data['subtitle'], 'default');
+        $data['description'] = Purifier::clean($data['description'], 'default');
+
+
         if($request->hasFile('cv')){
-            $path=$request->file('cv');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('cv'),$name);
-            $data['cv']=$name;
-            
+            $data['cv']=$this->uploadFile($request->file('cv'), 'cv');
+
         }
         if($request->hasFile('image')){
-            $path=$request->file('image');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('images'),$name);
-            $data['image']=$name;
+            $data['image']=$this->uploadFile($request->file('image'), 'images');
         }
+        
 
-        $about=About::create([
-            'title' => $validated['title'],
-            'subtitle' => $validated['subtitle'],
-            'description' => $validated['description'],
-            'linkedin' => $validated['linkedin'] ?? null,
-            'github' => $validated['github'] ?? null,
-            'facebook' => $validated['facebook'] ?? null,
-            'instagram' => $validated['instagram'] ?? null,
-            'user_id' => $validated['user_id'],
-        ]);
+        $about=About::create($data);
         return response()->json([
             'status'  => true,
             'message' => 'About created successfully!',
@@ -66,36 +55,36 @@ class AboutController extends Controller
         ], 201);
 
     }
-    public function update(Request $request, About $about)
+    public function update(AboutRequest $request, About $about)
     {
-        $data=$request->validate([
-            'title'=>'required|string|max:50',
-            'subtitle'=>'required|string|max:50',
-            'description'=>'required|string',
-            'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'cv'=>'nullable|string',
-            'linkedin'=>'nullable|string',
-            'github'=>'nullable|string',
-            'facebook'=>'nullable|string',
-            'instagram'=>'nullable|string',
-            'user_id'=>'required|exists:users,id',
-        ]);
+        $data=$request->validated();
+        
+        if (isset($data['title'])) {
+            $data['title'] = Purifier::clean($data['title'], 'default');
+        }
 
+        if (isset($data['subtitle'])) {
+            $data['subtitle'] = Purifier::clean($data['subtitle'], 'default');
+        }
+
+        if (isset($data['description'])) {
+            $data['description'] = Purifier::clean($data['description'], 'default');
+        }
         if($request->hasFile('image')){
-            $path=$request->file('image');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('images'),$name);
-            $data['image']=$name;
+            if ($about->image) {
+                @unlink(public_path('images/' . $about->image));
+            }
+            $data['image']=$this->uploadFile($request->file('image'), 'images');
         }
 
         if($request->hasFile('cv')){
-            $path=$request->file('cv');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('cv'),$name);
-            $data['cv']=$name;
+            if ($about->cv) {
+                @unlink(public_path('cv/' . $about->cv));
+            }
+            $data['cv']=$this->uploadFile($request->file('cv'), 'cv');
         }
 
-        $about->update($data);
+        $about->update($data);       
         return response()->json([
             'status'  => true,
             'message' => 'About updated successfully!',
@@ -106,6 +95,10 @@ class AboutController extends Controller
     public function destroy($id)
     {
         $about=About::find($id);
+        if ($about->image) 
+            @unlink(public_path('images/' . $about->image));
+        if ($about->cv) 
+            @unlink(public_path('cv/' . $about->cv));
         $about->delete();
         return response()->json([
             'message' => 'About deleted successfully',

@@ -9,7 +9,9 @@ class Experience extends Model
 {
     use SoftDeletes;
     protected $table = 'experiences';
-    protected $filalable = ['role', 'company', 'start_date', 'end_date', 'user_id'];
+    protected $fillable = [
+        'role', 'company', 'start_date', 'end_date', 'user_id'
+    ];
     protected $casts = ['start_date' => 'date', 'end_date' => 'date'];
 
     public function user()

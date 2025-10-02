@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
+            $table->longText('description');
             $table->string('image')->nullable();
             $table->string('url')->nullable();
             $table->softDeletes();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignIdFor(Category::class, 'category_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();//category has many projects, project belongs to one category
+            $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete()->cascadeOnUpdate();//category has many projects, project belongs to one category
             $table->timestamps();
         });
     }

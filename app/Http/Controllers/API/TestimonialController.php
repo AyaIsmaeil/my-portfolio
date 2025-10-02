@@ -65,12 +65,13 @@ class TestimonialController extends Controller
     public function update(Request $request, Testimonial $testimonial)
     {
         $request->validate([
-            'name'=>'required|string|max:50',
-            'job'=>'required|string',
-            'message'=>'required|string',
-            'rating'=>'required|integer',
-            'image'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'=>'sometimes|required|string|max:50',
+            'job'=>'sometimes|required|string',
+            'message'=>'sometimes|required|string',
+            'rating'=>'sometimes|required|integer',
+            'image'=>'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
 
         if($request->hasFile('image')){
             $path=$request->file('image');
@@ -87,9 +88,7 @@ class TestimonialController extends Controller
         
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Testimonial $testimonial)
     {
         $testimonial->delete();

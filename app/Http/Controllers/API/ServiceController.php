@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Mews\Purifier\Facades\Purifier;
 
 class ServiceController extends Controller
 {
@@ -29,12 +30,8 @@ class ServiceController extends Controller
             'description'=>'required|string',
             'user_id'=>'required|exists:users,id'
         ]);
-        if($request->hasFile('icon')){
-            $path=$request->file('icon');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('services'),$name);
-            $data['icon']=$name;
-        }
+        $data['title']=Purifier::clean($data['title'], 'default');
+        $data['description']=Purifier::clean($data['description'], 'default');
         
 
         $service=Service::create($data);
@@ -45,12 +42,10 @@ class ServiceController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(Service $service)
     {
-        $service=Service::find($service->id);
+        
         return response()->json([
             'status'  => true,
             'message' => 'Service List',
@@ -59,15 +54,16 @@ class ServiceController extends Controller
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, Service $service)
     {
         $data=$request->validate([
-            'title'=>'required|string|max:50',
-            'description'=>'required|string',
+            'title'=>'sometimes|required|string|max:50',
+            'description'=>'sometimes|required|string',
         ]);
+
+        $data['title']=Purifier::clean($data['title'], 'default');
+        $data['description']=Purifier::clean($data['description'], 'default');
 
         $service->update($data);
         return response()->json([
@@ -82,9 +78,10 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        $service->delete();
         return response()->json([
+            'status' => true,
             'message' => 'Service deleted successfully',
-        ]);
+            'data' => null
+        ], 200);
     }
 }

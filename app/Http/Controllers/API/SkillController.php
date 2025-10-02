@@ -64,8 +64,8 @@ class SkillController extends Controller
     public function update(Request $request, Skill $skill)
     {
         $data=$request->validate([
-            'name'=>'required|string|max:50',
-            'percentage'=>'required|integer',
+            'name'=>'sometimes|required|string|max:50',
+            'percentage'=>'sometimes|required|integer',
         ]);
 
         $skill->update($data);
@@ -76,9 +76,7 @@ class SkillController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Skill $skill)
     {
         $skill->delete();

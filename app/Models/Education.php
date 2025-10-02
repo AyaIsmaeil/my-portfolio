@@ -10,8 +10,8 @@ class Education extends Model
     use SoftDeletes;
     protected $table='education';
     protected $fillable = [
-        'title',
-        'description',
+        'degree',
+        'institution',
         'start_date',
         'end_date',
         'user_id',
