@@ -13,8 +13,7 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index(){
         $project=Project::all();
         return response()->json([
             'status'  => true,
@@ -23,9 +22,7 @@ class ProjectController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $data=$request->validate([
@@ -47,8 +44,6 @@ class ProjectController extends Controller
             $data['image']=$name;         
         }
 
-
-
         $project=Project::create($data);
         return response()->json([
             'status'  => true,
@@ -57,9 +52,6 @@ class ProjectController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Project $project)
     {
         return response()->json([
@@ -69,51 +61,51 @@ class ProjectController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Project $project)
     {
-       $data=$request->validate([
-            'title'=>'sometimes|required|string|max:50',
-            'description'=>'sometimes|required|string',
-            'image'=>'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'url'=>'sometimes|required|url',
-    
-       ]);
+        $data = $request->validate([
+            'title' => 'sometimes|string|max:50',
+            'description' => 'sometimes|string',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'url' => 'sometimes|url',
+            'user_id' => 'sometimes|exists:users,id',
+            'category_id' => 'sometimes|exists:categories,id'
+        ]);
+
         if(isset($data['title'])){
             $data['title'] = Purifier::clean($data['title'], 'default');
         }
-
         if(isset($data['description'])){
             $data['description'] = Purifier::clean($data['description'], 'default');
         }
 
         if($request->hasFile('image')){
-            if($project->image){
-                @unlink(public_path('projects/'.$project->image));
+            if($project->image && file_exists(public_path('projects/'.$project->image))){
+                unlink(public_path('projects/'.$project->image));
             }
-            $path=$request->file('image');
-            $name=time().".".$path->getClientOriginalExtension();
-            $path->move(public_path('projects'),$name);
-            $data['image']=$name;
+            $path = $request->file('image');
+            $name = time() . "." . $path->getClientOriginalExtension();
+            $path->move(public_path('projects'), $name);
+            $data['image'] = $name;
         }
 
         $project->update($data);
+
         return response()->json([
-            'status'  => true,
+            'status' => true,
             'message' => 'Project updated successfully!',
-            'data'    => $project
+            'data' => $project
         ]);
     }
+
 
 
     public function destroy(Project $project)
     {
 
-    if ($project->image) {
-        @unlink(public_path('projects/' . $project->image));
-    }
+        if ($project->image) {
+            unlink(public_path('projects/' . $project->image));
+        }
 
         $project->delete();
 

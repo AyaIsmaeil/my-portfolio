@@ -71,7 +71,7 @@ class EducationController extends Controller
             'status'  => true,
             'message' => 'Education updated successfully!',
             'data'    => $education
-        ], 200);
+        ], 201);
     }
 
 

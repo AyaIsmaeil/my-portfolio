@@ -27,13 +27,25 @@ class AboutRequest extends FormRequest
             'description' => 'required|string',
             'user_id' => 'required|exists:users,id',
             'image' => 'nullable|image',
-            'cv' => 'nullable|file'
+            'cv' => 'nullable|file',
+            'linkedin' => 'nullable|url',
+            'github' => 'nullable|url',
+            'instagram' => 'nullable|url',
+            'facebook' => 'nullable|url',
+            'user_id' => 'required|exists:users,id',
+            
         ];
 
         if ($this->method() == 'PUT' || $this->method() == 'PATCH') {
             $rules['title'] = 'sometimes|required|string|max:255';
             $rules['subtitle'] = 'sometimes|required|string|max:255';
             $rules['description'] = 'sometimes|required|string';
+            $rules['image'] = 'sometimes|image';
+            $rules['cv'] = 'sometimes|file';
+            $rules['linkedin'] = 'sometimes|url';
+            $rules['github'] = 'sometimes|url';
+            $rules['instagram'] = 'sometimes|url';
+            $rules['facebook'] = 'sometimes|url';
             $rules['user_id'] = 'sometimes|required|exists:users,id';
         }
 

@@ -7,14 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
+
     use SoftDeletes;
-    protected $fillable=[
-        'title',
-        'description',
-        'image',
-        'url',
-        'category_id',
-        'user_id'
+    protected $table = 'projects';
+    protected $fillable = [
+        'title', 'description',  'url', 'image', 'user_id', 'category_id'
     ];
     function user(){
         return $this->belongsTo(User::class);

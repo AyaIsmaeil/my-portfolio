@@ -61,9 +61,12 @@ class ServiceController extends Controller
             'title'=>'sometimes|required|string|max:50',
             'description'=>'sometimes|required|string',
         ]);
-
-        $data['title']=Purifier::clean($data['title'], 'default');
-        $data['description']=Purifier::clean($data['description'], 'default');
+        if (isset($data['title'])) {
+            $data['title'] = Purifier::clean($data['title'], 'default');
+        }
+        if (isset($data['description'])) {
+            $data['description'] = Purifier::clean($data['description'], 'default');
+        }
 
         $service->update($data);
         return response()->json([

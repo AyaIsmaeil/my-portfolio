@@ -29,6 +29,7 @@ class AboutController extends Controller
     }
 
 
+
     public function store(AboutRequest $request){
 
         $data=$request->validated();
@@ -71,8 +72,8 @@ class AboutController extends Controller
             $data['description'] = Purifier::clean($data['description'], 'default');
         }
         if($request->hasFile('image')){
-            if ($about->image) {
-                @unlink(public_path('images/' . $about->image));
+            if ($about->image && file_exists(public_path('images/' . $about->image))) {
+                unlink(public_path('images/' . $about->image));
             }
             $data['image']=$this->uploadFile($request->file('image'), 'images');
         }
@@ -92,16 +93,16 @@ class AboutController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
+    public function destroy(About $about)
     {
-        $about=About::find($id);
         if ($about->image) 
-            @unlink(public_path('images/' . $about->image));
+            unlink(public_path('images/' . $about->image));
         if ($about->cv) 
-            @unlink(public_path('cv/' . $about->cv));
+            unlink(public_path('cv/' . $about->cv));
         $about->delete();
         return response()->json([
             'message' => 'About deleted successfully',
-        ]);
+            'data'    => $about
+        ], 200);
     }
 }

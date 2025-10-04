@@ -12,6 +12,7 @@ class Testimonial extends Model
         'message',
         'image',
         'rating',
+        'user_id'
 
     ];
     function user(){

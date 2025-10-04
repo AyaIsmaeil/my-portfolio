@@ -19,6 +19,8 @@ Route::prefix('guest')->group(function () {
     Route::get('/about', [AboutController::class, 'index']);
     Route::get('/skills', [SkillController::class, 'index']);
     Route::get('/services', [ServiceController::class, 'index']);
+    Route::get('/educations', [EducationController::class, 'index']);
+    Route::get('/experiences', [ExperienceController::class, 'index']);
     Route::get('/projects', [ProjectController::class, 'index']); 
     Route::get('/categories', [ProjectController::class, 'index']); 
     Route::get('/testimonials', [TestimonialController::class, 'index']);
