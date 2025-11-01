@@ -28,12 +28,13 @@ class ContactController extends Controller
         $data=$request->validate([
             'sender_name'=>'required|string|max:50',
             'sender_email'=>'required|email',
-            'project'=>'nullable|string|max:255',
+            'subject'=>'nullable|string|max:255',
             'message'=>'required|string',
             'user_id'=>'required|exists:users,id'
         ]);
         $data['message'] = Purifier::clean($data['message'], 'default');
         $contact=Contact::create($data);
+
         return response()->json([
             'status'  => true,
             'message' => 'Your message has been sent successfully!',
@@ -50,7 +51,8 @@ class ContactController extends Controller
         }
         return response()->json([
             'status'  => true,
-            'message' => 'Contact List',
+            'message' => $message,
+            
         ], 200);
     }
 

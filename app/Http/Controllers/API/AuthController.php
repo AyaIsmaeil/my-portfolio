@@ -29,6 +29,7 @@ class AuthController extends Controller
             'user' => $user
         ],200);
     }
+    
     function logout(Request $request){
         $request->user()->tokens()->delete();
         return response()->json([
